@@ -416,8 +416,8 @@ A: 项目已集成线程池配置，支持异步任务处理。
 ## 联系方式
 
 - 项目主页: [GitHub Repository]
-- 问题反馈: [GitHub Issues]
-- 邮箱: your-email@example.com
+- 问题反馈:jasonwz0809@gmail.com
+- 邮箱: jasonwz0809@gmail.com
 
 ## 致谢
 
