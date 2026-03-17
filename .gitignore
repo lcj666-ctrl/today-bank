@@ -49,3 +49,19 @@ Thumbs.db
 *~
 *.bak
 *.swp
+
+# Local configuration files
+application-local.yml
+application-dev.yml
+application-prod.yml
+
+# Environment variables files
+.env
+.env.local
+.env.*.local
+.env.docker
+
+# IDE specific files
+.idea/**/*
+!.idea/.gitignore
+

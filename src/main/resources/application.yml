@@ -1,0 +1,53 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/aipaint?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+    database: ${REDIS_DATABASE:0}
+  mvc:
+    converters:
+      preferred-json-mapper: jackson
+# 阿里云短信服务配置
+#aliyun:
+#  sms:
+#    accessKeyId: ${ALIYUN_SMS_ACCESS_KEY_ID:}
+#    accessKeySecret: ${ALIYUN_SMS_ACCESS_KEY_SECRET:}
+#    signName: ${ALIYUN_SMS_SIGN_NAME:}
+#    templateCode: ${ALIYUN_SMS_TEMPLATE_CODE:}  # 验证码模板
+#    expireTime: 300  # 验证码过期时间（秒）
+#  servlet:
+#    multipart:
+#      max-file-size: 10MB
+#      max-request-size: 10MB
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.aipaint.entity
+
+oss:
+  endpoint: ${OSS_ENDPOINT:oss-cn-hangzhou.aliyuncs.com}
+  accessKeyId: ${OSS_ACCESS_KEY_ID:}
+  accessKeySecret: ${OSS_ACCESS_KEY_SECRET:}
+  bucketName: ${OSS_BUCKET_NAME:lcj666}
+
+jwt:
+  secret: ${JWT_SECRET:DYCvcEKNY2GkbGlZ}
+  expire: ${JWT_EXPIRE:86400}
+  refresh-threshold: ${JWT_REFRESH_THRESHOLD:3600}
+
+wechat:
+  appid: ${WECHAT_APPID:}
+  secret: ${WECHAT_SECRET:}
+
+server:
+  port: ${SERVER_PORT:48080}
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
