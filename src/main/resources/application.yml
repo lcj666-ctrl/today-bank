@@ -51,3 +51,6 @@ server:
       charset: UTF-8
       force: true
       enabled: true
+
+white:
+  phone: ${WHITE_PHONE:13123970809,13056846829}
