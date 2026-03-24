@@ -409,6 +409,39 @@ A: 修改 `AiImageGenerateUtil.java` 中的模型配置参数。
 ### Q5: 如何处理并发请求？
 A: 项目已集成线程池配置，支持异步任务处理。
 
+## CI/CD 配置
+
+### GitHub Actions 自动部署
+
+本项目已配置 GitHub Actions 实现自动 CI/CD 流程：
+
+#### 配置步骤
+
+1. **在 GitHub 仓库中添加 Secrets**
+   - `SSH_PRIVATE_KEY`: 服务器 SSH 私钥
+   - `SERVER_USER`: 服务器用户名（如 `root`）
+   - `SERVER_HOST`: 服务器 IP 地址
+
+2. **配置生产环境变量**
+   - 编辑 `deploy-ci.sh` 脚本中的配置
+   - 确保服务器已安装 Docker 和 Docker Compose
+
+3. **推送到 GitHub**
+   - 推送代码到 `main` 或 `master` 分支
+   - GitHub Actions 会自动执行以下步骤：
+     - 拉取代码
+     - 构建 Maven 项目
+     - 构建 Docker 镜像
+     - 部署到阿里云服务器
+     - 启动应用服务
+
+#### 查看 CI/CD 状态
+- 进入 GitHub 仓库 → Actions 标签页
+- 查看工作流执行状态和详细日志
+
+#### 手动触发部署
+- 在 GitHub Actions 页面点击 "Run workflow" 按钮
+
 ## 许可证
 
 本项目采用 MIT 许可证 - 详见 LICENSE 文件
