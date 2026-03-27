@@ -1,5 +1,6 @@
 package com.aipaint.controller;
 
+import com.aipaint.entity.Drawing;
 import com.aipaint.service.DrawingService;
 import com.aipaint.util.RateLimiterUtil;
 import com.aipaint.util.Result;
@@ -30,8 +31,8 @@ public class DrawingController {
             return Result.error(401, "未登录");
         }
 
-        // 检查限流：每天最多50次
-        final int UPLOAD_LIMIT = 50;
+        // 检查限流：每天最多100次
+        final int UPLOAD_LIMIT = 100;
         if (rateLimiterUtil.isOverLimit(userId, "upload", UPLOAD_LIMIT)) {
              return Result.errorNew(429, "今日上传次数已达上限，请明天再试");
         }
@@ -41,5 +42,10 @@ public class DrawingController {
     @GetMapping("/list")
     public Result<List<DrawingListVO>> getList(){
         return Result.success(drawingService.getList());
+    }
+
+    @GetMapping("/detail")
+    public Result<Drawing> detail(Long id){
+        return Result.success(drawingService.getById(id));
     }
 }

@@ -1,29 +1,16 @@
 package com.aipaint.ai;
 
-import com.alibaba.dashscope.aigc.imagesynthesis.*;
-import com.alibaba.dashscope.exception.ApiException;
-import com.alibaba.dashscope.exception.NoApiKeyException;
-import com.alibaba.dashscope.utils.JsonUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.dashscope.aigc.imagesynthesis.ImageSynthesis;
+import com.alibaba.dashscope.aigc.imagesynthesis.ImageSynthesisOutput;
 import com.alibaba.dashscope.aigc.imagesynthesis.ImageSynthesisParam;
 import com.alibaba.dashscope.aigc.imagesynthesis.ImageSynthesisResult;
 import com.alibaba.dashscope.exception.ApiException;
 import com.alibaba.dashscope.exception.NoApiKeyException;
+import com.alibaba.dashscope.exception.UploadFileException;
 import com.alibaba.dashscope.utils.JsonUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
@@ -32,9 +19,9 @@ public class AiImageGenerateUtil {
 
     public String asyncCall(String sketchImageUrl) {
         log.info("---create task----");
-        String taskId = this.createAsyncTask( sketchImageUrl);
+        String taskId = this.createAsyncTask(sketchImageUrl);
         log.info("---wait task done then return image url----");
-       return this.waitAsyncTask(taskId);
+        return this.waitAsyncTask(taskId);
     }
 
     /**
@@ -43,12 +30,20 @@ public class AiImageGenerateUtil {
      * @return taskId
      */
     public String createAsyncTask(String sketchImageUrl) {
-        String prompt = "a cute 3D baby animal based on a child doodle drawing, simple shapes, round body, big glossy eyes";
-//        String sketchImageUrl = "https://lcj666.oss-cn-hangzhou.aliyuncs.com/index/1/d49df1bc-7bd0-4d63-9046-d1c57e840f1a.png";
+
+        String prompt = "";
+        try {
+            prompt = AiViewCoverGenerateUtil.simpleMultiModalConversationCall(sketchImageUrl);
+        } catch (NoApiKeyException e) {
+            throw new RuntimeException(e);
+        } catch (UploadFileException e) {
+            throw new RuntimeException(e);
+        }
+        String resultPrompt= StrUtil.isEmpty(prompt)?"": "这个是"+prompt;
         String model = "wanx-sketch-to-image-lite";
         ImageSynthesisParam param = ImageSynthesisParam.builder()
                 .model(model)
-                .prompt(prompt)
+                .prompt(resultPrompt)
                 .n(1)
                 .size("768*768")
                 .sketchImageUrl(sketchImageUrl)
@@ -65,7 +60,7 @@ public class AiImageGenerateUtil {
         }
         String taskId = result.getOutput().getTaskId();
         log.info("生成的任务id是：{}", taskId);
-         return taskId;
+        return taskId;
     }
 
 
@@ -93,7 +88,8 @@ public class AiImageGenerateUtil {
 
     public static void main(String[] args) {
         AiImageGenerateUtil text2Image = new AiImageGenerateUtil();
-        // text2Image.asyncCall();
+//        System.out.println(text2Image.asyncCall("https://lcj666.oss-cn-hangzhou.aliyuncs.com/draw/5/554ad923-3d0e-4d6a-a12a-70ced73116f2.png"));
+
     }
 
 

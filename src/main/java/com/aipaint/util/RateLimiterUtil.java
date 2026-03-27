@@ -22,16 +22,17 @@ public class RateLimiterUtil {
 
     /**
      * 检查用户是否超过限流
+     *
      * @param userId 用户ID
-     * @param key 限流键
-     * @param limit 限制次数
+     * @param key    限流键
+     * @param limit  限制次数
      * @return 是否超过限制
      */
     public boolean isOverLimit(Long userId, String key, int limit) {
         String redisKey = buildRedisKey(userId, key);
         Object value = redisTemplate.opsForValue().get(redisKey);
         Integer count = null;
-        
+
         if (value != null) {
             try {
                 if (value instanceof String) {
@@ -43,7 +44,7 @@ public class RateLimiterUtil {
                 log.error("解析Redis值失败: {}", e.getMessage(), e);
             }
         }
-        
+
         if (count == null) {
             // 第一次调用，初始化计数
             redisTemplate.opsForValue().set(redisKey, "1", getSecondsUntilTomorrow(), TimeUnit.SECONDS);
@@ -63,16 +64,17 @@ public class RateLimiterUtil {
 
     /**
      * 获取用户剩余次数
+     *
      * @param userId 用户ID
-     * @param key 限流键
-     * @param limit 限制次数
+     * @param key    限流键
+     * @param limit  限制次数
      * @return 剩余次数
      */
     public int getRemainingCount(Long userId, String key, int limit) {
         String redisKey = buildRedisKey(userId, key);
         Object value = redisTemplate.opsForValue().get(redisKey);
         Integer count = null;
-        
+
         if (value != null) {
             try {
                 if (value instanceof String) {
@@ -84,7 +86,7 @@ public class RateLimiterUtil {
                 log.error("解析Redis值失败: {}", e.getMessage(), e);
             }
         }
-        
+
         if (count == null) {
             return limit;
         }
@@ -93,8 +95,9 @@ public class RateLimiterUtil {
 
     /**
      * 构建Redis键
+     *
      * @param userId 用户ID
-     * @param key 限流键
+     * @param key    限流键
      * @return Redis键
      */
     private String buildRedisKey(Long userId, String key) {
@@ -104,23 +107,77 @@ public class RateLimiterUtil {
 
     /**
      * 获取到明天的秒数
+     *
      * @return 秒数
      */
-    private long getSecondsUntilTomorrow() {
+    private static long getSecondsUntilTomorrow() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        long tomorrowMillis = tomorrow.atStartOfDay().toEpochSecond(java.time.ZoneOffset.UTC) * 1000;
+        long tomorrowMillis = tomorrow.atStartOfDay()
+                .toEpochSecond(java.time.ZoneOffset.ofHours(8)) * 1000; // 东八区
+
         long nowMillis = System.currentTimeMillis();
         return (tomorrowMillis - nowMillis) / 1000;
     }
 
+
+
     /**
      * 重置用户的限流计数
+     *
      * @param userId 用户ID
-     * @param key 限流键
+     * @param key    限流键
      */
     public void resetLimit(Long userId, String key) {
         String redisKey = buildRedisKey(userId, key);
         redisTemplate.delete(redisKey);
         log.debug("重置限流计数: {}", redisKey);
+    }
+
+    /**
+     * 限流计数减法1
+     *
+     * @param userId 用户ID
+     * @param key    限流键
+     * @return 是否成功
+     */
+    public boolean decrementLimit(Long userId, String key) {
+        String redisKey = buildRedisKey(userId, key);
+        Object value = redisTemplate.opsForValue().get(redisKey);
+        Integer count = null;
+
+        if (value != null) {
+            try {
+                if (value instanceof String) {
+                    count = Integer.parseInt((String) value);
+                } else if (value instanceof Integer) {
+                    count = (Integer) value;
+                }
+            } catch (NumberFormatException e) {
+                log.error("解析Redis值失败: {}", e.getMessage(), e);
+            }
+        }else {
+            count=0;
+        }
+        
+        if (count != null) {
+            redisTemplate.opsForValue().decrement(redisKey);
+            log.debug("限流计数减1: {} = {}", redisKey, count - 1);
+            return true;
+        }
+        return false;
+    }
+
+   
+    
+    /**
+     * 记录用户分享
+     *
+     * @param userId 用户ID
+     * @return 是否成功
+     */
+    public boolean recordShare(Long userId) {
+        String key = "share";
+        // 使用isOverLimit方法会自动增加计数
+        return !isOverLimit(userId, key, 10); // 每日最多分享10次
     }
 }

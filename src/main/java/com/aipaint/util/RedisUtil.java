@@ -32,15 +32,5 @@ public class RedisUtil {
         return redisTemplate.hasKey(key);
     }
 
-    // 获取今日绘画主题
-    public String getDailyDrawingTheme() {
-        String key = "daily_drawing_theme";
-        Object value = get(key);
-        if (value == null) {
-            // 默认主题
-            value = "cat";
-            set(key, value, 24, TimeUnit.HOURS);
-        }
-        return (String) value;
-    }
+
 }

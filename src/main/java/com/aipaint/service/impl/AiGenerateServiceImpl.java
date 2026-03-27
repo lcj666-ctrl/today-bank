@@ -43,9 +43,6 @@ public class AiGenerateServiceImpl implements AiGenerateService {
             return vo;
         }
 
-
-        // 生成prompt
-
         // 调用AI生成图像
         String aiImageUrl = aiImageGenerateUtil.asyncCall(drawing.getDrawingUrl());
         String aiImageOssUrl = null;
