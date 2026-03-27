@@ -1,5 +1,7 @@
 package com.aipaint.service.impl;
 
+import cn.hutool.core.stream.StreamUtil;
+import cn.hutool.core.util.StrUtil;
 import com.aipaint.ai.AiImageGenerateUtil;
 import com.aipaint.ai.QwenImageEdit;
 import com.aipaint.dto.AiGenerateDTO;
@@ -34,7 +36,7 @@ public class AiGenerateServiceImpl implements AiGenerateService {
     private OssUploadUtil ossUploadUtil;
 
     @Override
-    public AiGenerateVO generate(AiGenerateDTO dto,Long userId) {
+    public AiGenerateVO generate(AiGenerateDTO dto, Long userId) {
         Drawing drawing = drawingService.getById(dto.getDrawingId());
         if (drawing == null) {
             throw new RuntimeException("作品不存在");
@@ -48,27 +50,27 @@ public class AiGenerateServiceImpl implements AiGenerateService {
         }
 
         // 调用AI生成图像
-//        String aiImageUrl = aiImageGenerateUtil.asyncCall(drawing.getDrawingUrl());
         String aiImageUrl = "";
         try {
             aiImageUrl = QwenImageEdit.call(drawing.getDrawingUrl(), null);
         } catch (NoApiKeyException e) {
-            throw new RuntimeException(e);
+             throw new RuntimeException(e);
         } catch (UploadFileException e) {
-            throw new RuntimeException(e);
+             throw new RuntimeException(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+             throw new RuntimeException(e);
         }
-
+        if (StrUtil.isEmpty(aiImageUrl)) {
+            aiImageUrl = aiImageGenerateUtil.asyncCall(drawing.getDrawingUrl());
+        }
 
         String aiImageOssUrl = null;
         try {
-            aiImageOssUrl = ossUploadUtil.uploadFromUrl(aiImageUrl, "index",userId);
+            aiImageOssUrl = ossUploadUtil.uploadFromUrl(aiImageUrl, "index", userId);
         } catch (Exception e) {
             e.printStackTrace();
 
         }
-
         // 保存AI生成记录
         AiGenerateLog log = new AiGenerateLog();
         log.setDrawingId(dto.getDrawingId());
