@@ -4,5 +4,5 @@ import com.aipaint.vo.AiGenerateVO;
 import com.aipaint.dto.AiGenerateDTO;
 
 public interface AiGenerateService {
-    AiGenerateVO generate(AiGenerateDTO dto)  ;
+    AiGenerateVO generate(AiGenerateDTO dto,Long userId)  ;
 }

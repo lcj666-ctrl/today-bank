@@ -12,8 +12,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.UUID;
 
 @Component
@@ -81,23 +91,67 @@ public class OssUploadUtil {
     }
 
     /**
+     * 自动压缩策略
+     */
+    private static ByteArrayOutputStream compressImage(BufferedImage image) throws IOException {
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        // 获取 JPG writer
+        Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
+        ImageWriter writer = writers.next();
+
+        ImageWriteParam param = writer.getDefaultWriteParam();
+
+        if (param.canWriteCompressed()) {
+            param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+
+            // ===== 动态压缩策略 =====
+            int width = image.getWidth();
+            int height = image.getHeight();
+
+            float quality;
+
+            if (width * height > 1500000) {
+                quality = 0.6f; // 大图强压缩
+            } else if (width * height > 800000) {
+                quality = 0.7f;
+            } else {
+                quality = 0.8f;
+            }
+
+            param.setCompressionQuality(quality);
+        }
+
+        ImageOutputStream ios = ImageIO.createImageOutputStream(outputStream);
+        writer.setOutput(ios);
+
+        writer.write(null, new IIOImage(image, null, null), param);
+
+        ios.close();
+        writer.dispose();
+
+        return outputStream;
+    }
+    /**
      * 通过 URL 直接上传到 OSS（不需要下载到本地）
      *
      * @param imageUrl 图片 URL
      * @param drawType 文件类型目录
      * @return 上传后的 OSS URL
      */
-    public String uploadFromUrl(String imageUrl, String drawType) throws Exception {
-        // 创建 OSS 客户端
+    public String uploadFromUrl(String imageUrl, String drawType,Long userId) throws Exception {
+
+        BufferedImage image = ImageIO.read(new URL(imageUrl));
+        ByteArrayOutputStream byteArrayOutputStream = compressImage(image);
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
 
         try {
             // 从 URL 获取输入流
-            URL url = new URL(imageUrl);
-            InputStream inputStream = url.openStream();
 
             // 生成文件名
             String fileName = UUID.randomUUID().toString() + "." + getFileExtensionFromUrl(imageUrl);
-            String objectName = drawType + "/ai/" + SecurityContextUtil.getCurrentUserId() + "/" + fileName;
+            String objectName = drawType + "/ai/" + userId + "/" + fileName;
 
             // 设置文件 ACL 为公共读
             ObjectMetadata metadata = new ObjectMetadata();

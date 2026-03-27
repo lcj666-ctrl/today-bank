@@ -1,17 +1,21 @@
 package com.aipaint.service.impl;
 
-import com.aipaint.entity.Drawing;
+import com.aipaint.ai.AiImageGenerateUtil;
+import com.aipaint.ai.QwenImageEdit;
+import com.aipaint.dto.AiGenerateDTO;
 import com.aipaint.entity.AiGenerateLog;
+import com.aipaint.entity.Drawing;
 import com.aipaint.mapper.AiGenerateLogMapper;
 import com.aipaint.oss.OssUploadUtil;
 import com.aipaint.service.AiGenerateService;
 import com.aipaint.service.DrawingService;
-import com.aipaint.ai.AiImageGenerateUtil;
-import com.aipaint.ai.PromptBuilder;
 import com.aipaint.vo.AiGenerateVO;
-import com.aipaint.dto.AiGenerateDTO;
+import com.alibaba.dashscope.exception.NoApiKeyException;
+import com.alibaba.dashscope.exception.UploadFileException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 public class AiGenerateServiceImpl implements AiGenerateService {
@@ -30,7 +34,7 @@ public class AiGenerateServiceImpl implements AiGenerateService {
     private OssUploadUtil ossUploadUtil;
 
     @Override
-    public AiGenerateVO generate(AiGenerateDTO dto)   {
+    public AiGenerateVO generate(AiGenerateDTO dto,Long userId) {
         Drawing drawing = drawingService.getById(dto.getDrawingId());
         if (drawing == null) {
             throw new RuntimeException("作品不存在");
@@ -44,10 +48,22 @@ public class AiGenerateServiceImpl implements AiGenerateService {
         }
 
         // 调用AI生成图像
-        String aiImageUrl = aiImageGenerateUtil.asyncCall(drawing.getDrawingUrl());
+//        String aiImageUrl = aiImageGenerateUtil.asyncCall(drawing.getDrawingUrl());
+        String aiImageUrl = "";
+        try {
+            aiImageUrl = QwenImageEdit.call(drawing.getDrawingUrl(), null);
+        } catch (NoApiKeyException e) {
+            throw new RuntimeException(e);
+        } catch (UploadFileException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
         String aiImageOssUrl = null;
         try {
-            aiImageOssUrl = ossUploadUtil.uploadFromUrl(aiImageUrl, "index");
+            aiImageOssUrl = ossUploadUtil.uploadFromUrl(aiImageUrl, "index",userId);
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -70,4 +86,6 @@ public class AiGenerateServiceImpl implements AiGenerateService {
         vo.setAiImageUrl(aiImageUrl);
         return vo;
     }
+
+
 }

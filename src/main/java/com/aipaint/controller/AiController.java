@@ -46,7 +46,7 @@ public class AiController {
         vo.setRemainingTimes(remainingTimes);
         threadPoolConfig.taskExecutor().execute(() -> {
             // 减去剩余次数
-            aiGenerateService.generate(dto);
+            aiGenerateService.generate(dto,userId);
         });
         return Result.success(vo);
     }
