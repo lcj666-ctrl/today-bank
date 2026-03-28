@@ -51,15 +51,15 @@ public class AiGenerateServiceImpl implements AiGenerateService {
 
         // 调用AI生成图像
         String aiImageUrl = "";
-        try {
-            aiImageUrl = QwenImageEdit.call(drawing.getDrawingUrl(), null);
-        } catch (NoApiKeyException e) {
-             throw new RuntimeException(e);
-        } catch (UploadFileException e) {
-             throw new RuntimeException(e);
-        } catch (IOException e) {
-             throw new RuntimeException(e);
-        }
+//        try {
+//            aiImageUrl = QwenImageEdit.call(drawing.getDrawingUrl(), null);
+//        } catch (NoApiKeyException e) {
+//             throw new RuntimeException(e);
+//        } catch (UploadFileException e) {
+//             throw new RuntimeException(e);
+//        } catch (IOException e) {
+//             throw new RuntimeException(e);
+//        }
         if (StrUtil.isEmpty(aiImageUrl)) {
             aiImageUrl = aiImageGenerateUtil.asyncCall(drawing.getDrawingUrl());
         }
