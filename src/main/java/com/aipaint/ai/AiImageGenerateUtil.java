@@ -33,7 +33,9 @@ public class AiImageGenerateUtil {
 
         String prompt = "";
         try {
+            log.info("---视觉识别开始----");
             prompt = AiViewCoverGenerateUtil.simpleMultiModalConversationCall(sketchImageUrl);
+            log.info("---视觉识别结束----");
         } catch (NoApiKeyException e) {
             throw new RuntimeException(e);
         } catch (UploadFileException e) {
