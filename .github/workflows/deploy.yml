@@ -40,6 +40,6 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /opt/ai-paint
-            mv ai-paint-backend-1.0-SNAPSHOT.jar app.jar
+            mv -f target/ai-paint-backend-1.0-SNAPSHOT.jar app.jar
             docker compose down
             docker compose up -d
