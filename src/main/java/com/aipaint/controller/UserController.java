@@ -32,7 +32,7 @@ public class UserController {
     @Autowired
     private SmsUtil smsUtil;
 
-    @Value("${white:phone:13123970809,13056846829}")
+    @Value("${white.phone:13123970809,13056846829}")
     private String whitePhone;
     /**
      * 小程序登录接口

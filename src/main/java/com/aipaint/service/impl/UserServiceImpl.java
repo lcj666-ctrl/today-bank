@@ -1,24 +1,24 @@
 package com.aipaint.service.impl;
 
 import cn.hutool.core.util.StrUtil;
-import com.aipaint.sms.SmsUtil;
-import com.aipaint.util.Result;
-import com.aipaint.util.SecurityContextUtil;
-import com.alibaba.dashscope.threads.runs.Run;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.aipaint.dto.LoginDTO;
+import com.aipaint.entity.Drawing;
 import com.aipaint.entity.User;
+import com.aipaint.mapper.DrawingMapper;
 import com.aipaint.mapper.UserMapper;
 import com.aipaint.service.UserService;
+import com.aipaint.sms.SmsUtil;
 import com.aipaint.util.JwtUtil;
+import com.aipaint.util.Result;
+import com.aipaint.util.SecurityContextUtil;
 import com.aipaint.util.WechatUtil;
 import com.aipaint.vo.LoginVO;
-import com.aipaint.dto.LoginDTO;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -38,7 +38,8 @@ public class UserServiceImpl implements UserService {
     private WechatUtil wechatUtil;
     @Autowired
     private SmsUtil smsUtil;
-
+    @Autowired
+    private DrawingMapper drawingMapper;
     @Override
     public Result<LoginVO> login(LoginDTO loginDTO) {
 
@@ -80,7 +81,10 @@ public class UserServiceImpl implements UserService {
                     user.setStatus(1);
                     user.setCreateTime(new Date());
                     user.setUpdateTime(new Date());
+
                     create(user);
+
+                    defaultDrawing(user);
                 } else {
                     log.info("用户登录: userId={}, openid={}", user.getId(), openid);
                     // 更新用户信息
@@ -130,6 +134,22 @@ public class UserServiceImpl implements UserService {
 
         }
         return Result.error(500, "验证验证码失败");
+    }
+
+    private void defaultDrawing(User user) {
+        Drawing drawing = new Drawing();
+        drawing.setUserId(user.getId());
+        drawing.setDrawingUrl("https://lcj666.oss-cn-hangzhou.aliyuncs.com/index/4/da6602d2-046e-4f3d-96e8-fbb9f68a2b81.png");
+        drawing.setAiImageUrl("https://lcj666.oss-cn-hangzhou.aliyuncs.com/index/ai/4/8ddb032a-9f04-46f7-b803-7ca5be983a8b.png");
+        drawing.setStatus(1);
+        drawingMapper.insert(drawing);
+
+        Drawing drawing1 = new Drawing();
+        drawing1.setUserId(user.getId());
+        drawing1.setDrawingUrl("https://lcj666.oss-cn-hangzhou.aliyuncs.com/draw/4/d5511df2-3ff9-4921-ba60-7ac72d1412be.png");
+        drawing1.setAiImageUrl("https://lcj666.oss-cn-hangzhou.aliyuncs.com/index/ai/4/07a711b2-6572-4c2b-bc83-df535a6204dc.png");
+        drawing1.setStatus(1);
+        drawingMapper.insert(drawing1);
     }
 
     private User getUserByPhoneNumber(String phoneNumber) {
