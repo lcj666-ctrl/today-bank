@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
                     user.setCountry(loginDTO.getCountry());
                     user.setLoginCount(1);
                     user.setLastLoginTime(new Date());
-                    user.setStatus(1);
+                    user.setStatus(0);
                     user.setCreateTime(new Date());
                     user.setUpdateTime(new Date());
 
@@ -146,8 +146,8 @@ public class UserServiceImpl implements UserService {
 
         Drawing drawing1 = new Drawing();
         drawing1.setUserId(user.getId());
-        drawing1.setDrawingUrl("https://lcj666.oss-cn-hangzhou.aliyuncs.com/draw/4/d5511df2-3ff9-4921-ba60-7ac72d1412be.png");
-        drawing1.setAiImageUrl("https://lcj666.oss-cn-hangzhou.aliyuncs.com/index/ai/4/07a711b2-6572-4c2b-bc83-df535a6204dc.png");
+        drawing1.setDrawingUrl("https://lcj666.oss-cn-hangzhou.aliyuncs.com/draw/12/fe73de68-51b9-4f94-bfb9-26ebdd07c0bd.png");
+        drawing1.setAiImageUrl("https://lcj666.oss-cn-hangzhou.aliyuncs.com/index/ai/12/8a2b23cc-1e65-404c-8fa1-799182cd0d3d.png");
         drawing1.setStatus(1);
         drawingMapper.insert(drawing1);
     }
