@@ -35,7 +35,7 @@ public class AiController {
         }
 
         // 检查限流：每天最多5次
-        final int GENERATE_LIMIT = 3;
+        final int GENERATE_LIMIT = 10;
         if (rateLimiterUtil.isOverLimit(userId, "generate", GENERATE_LIMIT)) {
             return Result.error(429, "今日AI生成次数已达上限，请明天再试");
         }
@@ -59,7 +59,7 @@ public class AiController {
         }
         Long userId = Long.valueOf(shareUserId);
         // 检查限流：每天最多10次
-        final int GENERATE_LIMIT =2;
+        final int GENERATE_LIMIT =5;
         if (rateLimiterUtil.isOverLimit(userId, "share", GENERATE_LIMIT)) {
             return Result.error(429, "今日分享次数已达上限，请明天再试");
         }
