@@ -1,6 +1,7 @@
 package com.aipaint.service;
 
 import com.aipaint.entity.User;
+import com.aipaint.test.JdLogisticsCallback;
 import com.aipaint.util.Result;
 import com.aipaint.vo.LoginVO;
 import com.aipaint.dto.LoginDTO;
@@ -53,4 +54,6 @@ public interface UserService {
     User update(User user);
 
     Boolean updateUser(LoginDTO loginDTO);
+
+    Boolean getMessage(String path, String appKey, String sign, String timestamp, JdLogisticsCallback jdLogisticsCallback);
 }

@@ -38,6 +38,7 @@ public class SecurityConfig {
      */
     private static final String[] WHITE_LIST = {
             "/api/user/login",
+            "/api/user/getMessage",
             "/api/user/register",
             "/api/user/refresh-token",
             "/api/user/send-code",

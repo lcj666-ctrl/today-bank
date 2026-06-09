@@ -3,6 +3,7 @@ package com.aipaint.controller;
 import com.aipaint.entity.User;
 import com.aipaint.service.UserService;
 import com.aipaint.sms.SmsUtil;
+import com.aipaint.test.JdLogisticsCallback;
 import com.aipaint.util.Result;
 import com.aipaint.util.SecurityContextUtil;
 import com.aipaint.dto.LoginDTO;
@@ -155,5 +156,15 @@ public class UserController {
     @PostMapping("/updateUser")
     public Result<Boolean> updateUser(@Valid @RequestBody LoginDTO loginDTO) {
         return Result.success(userService.updateUser(loginDTO));
+    }
+
+    @PostMapping("/getMessage")
+    public Result<Boolean> getMessage(   @RequestParam("path") String path, @RequestParam("app_key") String appKey,
+                                         @RequestParam("sign") String sign,
+                                         @RequestParam("timestamp") String timestamp,
+                                         @RequestBody JdLogisticsCallback jdLogisticsCallback) {
+        log.info("京东物流回调: {}", jdLogisticsCallback);
+        log.info("京东物流回调: path={}, app_key={}, sign={}, timestamp={}", path, appKey, sign, timestamp);
+        return Result.success(userService.getMessage(path, appKey, sign, timestamp, jdLogisticsCallback));
     }
 }

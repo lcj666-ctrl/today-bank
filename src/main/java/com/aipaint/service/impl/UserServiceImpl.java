@@ -8,6 +8,7 @@ import com.aipaint.mapper.DrawingMapper;
 import com.aipaint.mapper.UserMapper;
 import com.aipaint.service.UserService;
 import com.aipaint.sms.SmsUtil;
+import com.aipaint.test.JdLogisticsCallback;
 import com.aipaint.util.JwtUtil;
 import com.aipaint.util.Result;
 import com.aipaint.util.SecurityContextUtil;
@@ -234,5 +235,10 @@ public class UserServiceImpl implements UserService {
         }
         return userMapper.updateById(user) > 1;
 
+    }
+
+    @Override
+    public Boolean getMessage(String path, String appKey, String sign, String timestamp, JdLogisticsCallback jdLogisticsCallback) {
+        return null;
     }
 }
