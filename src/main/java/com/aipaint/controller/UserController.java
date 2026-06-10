@@ -159,9 +159,10 @@ public class UserController {
     }
 
     @PostMapping("/getMessage")
-    public Result<Boolean> getMessage(   @RequestParam("path") String path, @RequestParam("app_key") String appKey,
-                                         @RequestParam("sign") String sign,
-                                         @RequestParam("timestamp") String timestamp,
+    public Result<Boolean> getMessage(   @RequestParam(value="path",required = false) String path,
+                                         @RequestParam(value = "app_key",required = false) String appKey,
+                                         @RequestParam(value = "sign",required = false) String sign,
+                                         @RequestParam(value = "timestamp",required = false) String timestamp,
                                          @RequestBody JdLogisticsCallback jdLogisticsCallback) {
         log.info("京东物流回调: {}", jdLogisticsCallback);
         log.info("京东物流回调: path={}, app_key={}, sign={}, timestamp={}", path, appKey, sign, timestamp);
