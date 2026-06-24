@@ -161,16 +161,16 @@ public class UserController {
         return Result.success(userService.updateUser(loginDTO));
     }
 
-    @PostMapping(value = "/getMessage",consumes = MediaType.TEXT_PLAIN_VALUE)
-    public Result<Boolean> getMessage(   @RequestParam(value="path",required = false) String path,
-                                         @RequestParam(value = "app_key",required = false) String appKey,
-                                         @RequestParam(value = "sign",required = false) String sign,
-                                         @RequestParam(value = "timestamp",required = false) String timestamp,
-                                         @RequestBody String body) {
-        log.info("京东物流原始回调报文: {}", body);
-        JdLogisticsCallback jdLogisticsCallback = JSONObject.parseObject(body, JdLogisticsCallback.class);
-        log.info("京东物流回调: {}", jdLogisticsCallback);
-        log.info("京东物流回调: path={}, app_key={}, sign={}, timestamp={}", path, appKey, sign, timestamp);
-        return Result.success(userService.getMessage(path, appKey, sign, timestamp, jdLogisticsCallback));
-    }
+//    @PostMapping(value = "/getMessage",consumes = MediaType.TEXT_PLAIN_VALUE)
+//    public Result<Boolean> getMessage(   @RequestParam(value="path",required = false) String path,
+//                                         @RequestParam(value = "app_key",required = false) String appKey,
+//                                         @RequestParam(value = "sign",required = false) String sign,
+//                                         @RequestParam(value = "timestamp",required = false) String timestamp,
+//                                         @RequestBody String body) {
+//        log.info("京东物流原始回调报文: {}", body);
+//        JdLogisticsCallback jdLogisticsCallback = JSONObject.parseObject(body, JdLogisticsCallback.class);
+//        log.info("京东物流回调: {}", jdLogisticsCallback);
+//        log.info("京东物流回调: path={}, app_key={}, sign={}, timestamp={}", path, appKey, sign, timestamp);
+//        return Result.success(userService.getMessage(path, appKey, sign, timestamp, jdLogisticsCallback));
+//    }
 }
