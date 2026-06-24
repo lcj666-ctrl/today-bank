@@ -25,7 +25,7 @@ services:
       
       # JWT 配置
       JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRE: ${JWT_EXPIRE:-86400}
+      JWT_EXPIRE: ${JWT_EXPIRE:-3153600000}  # 等效永久（约100年）
       JWT_REFRESH_THRESHOLD: ${JWT_REFRESH_THRESHOLD:-3600}
       
       # 微信配置

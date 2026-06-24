@@ -32,10 +32,10 @@ public class DrawingController {
         }
 
         // 检查限流：每天最多100次
-//        final int UPLOAD_LIMIT = 20;
-//        if (rateLimiterUtil.isOverLimit(userId, "upload", UPLOAD_LIMIT)) {
-//             return Result.errorNew(429, "今日上传次数已达上限，请明天再试");
-//        }
+        final int UPLOAD_LIMIT = 20;
+        if (rateLimiterUtil.isOverLimit(userId, "upload", UPLOAD_LIMIT)) {
+             return Result.errorNew(429, "今日上传次数已达上限，请明天再试");
+        }
          UploadVO uploadVO = drawingService.upload(file, drawType);
         return Result.success(uploadVO);
     }

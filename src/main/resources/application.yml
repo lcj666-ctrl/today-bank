@@ -37,7 +37,7 @@ oss:
 
 jwt:
   secret: ${JWT_SECRET:DYCvcEKNY2GkbGlZ}
-  expire: ${JWT_EXPIRE:86400}
+  expire: ${JWT_EXPIRE:3153600000}  # 等效永久（约100年），refresh token 为其 7 倍
   refresh-threshold: ${JWT_REFRESH_THRESHOLD:3600}
 
 wechat:
