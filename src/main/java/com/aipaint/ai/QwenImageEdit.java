@@ -77,7 +77,7 @@ public class QwenImageEdit {
         parameters.put("n", 1);
         MultiModalConversationParam param = MultiModalConversationParam.builder()
                 .apiKey("sk-4c8dca7e730d497ab62f92609c33a15f")
-                .model("qwen-image-2.0")
+                .model("qwen-image-2.0-pro")
                 .messages(Collections.singletonList(userMessage))
                 .parameters(parameters)
                 .build();

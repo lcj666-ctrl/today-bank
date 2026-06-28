@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class LoginDTO {
+    /** 微信登录凭证code */
     private String code;
     private String encryptedData;
     private String iv;
@@ -13,6 +14,7 @@ public class LoginDTO {
     private String province;
     private String city;
     private String country;
+    /** 手机号（可选） */
     private String phoneNumber;
     private String phoneCode;
 }

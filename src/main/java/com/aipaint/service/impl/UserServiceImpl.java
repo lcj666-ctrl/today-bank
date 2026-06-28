@@ -46,95 +46,87 @@ public class UserServiceImpl implements UserService {
 
         log.info("用户登录开始: code={}", loginDTO.getCode());
 
-        String phoneNumber = loginDTO.getPhoneNumber();
+        try {
+            // 通过code获取openid
+            Map<String, Object> sessionInfo = wechatUtil.getSessionInfo(loginDTO.getCode());
+            String openid = (String) sessionInfo.get("openid");
 
-        boolean result = true;
-
-        if (result) {
-            try {
-                // 获取登录信息（包括openid、session_key和手机号）
-                Map<String, Object> loginInfo = wechatUtil.getLoginInfo(
-                        loginDTO.getCode(),
-                        loginDTO.getEncryptedData(),
-                        loginDTO.getIv()
-                );
-
-                String openid = (String) loginInfo.get("openid");
-
-                log.info("获取登录信息成功: openid={}, phoneNumber={}", openid, phoneNumber);
-
-                // 根据openid查询用户
-//                User user = getByOpenid(openid);
-                User user = getUserByPhoneNumber(phoneNumber);
-                if (user == null) {
-                    log.info("新用户注册: openid={}", openid);
-                    user = new User();
-                    user.setOpenid(openid);
-                    user.setNickname(loginDTO.getNickname());
-                    user.setAvatar(loginDTO.getAvatar());
-                    user.setPhoneNumber(phoneNumber);
-                    user.setGender(loginDTO.getGender());
-                    user.setProvince(loginDTO.getProvince());
-                    user.setCity(loginDTO.getCity());
-                    user.setCountry(loginDTO.getCountry());
-                    user.setLoginCount(1);
-                    user.setLastLoginTime(new Date());
-                    user.setStatus(0);
-                    user.setCreateTime(new Date());
-                    user.setUpdateTime(new Date());
-
-                    create(user);
-
-                    defaultDrawing(user);
-                } else {
-                    log.info("用户登录: userId={}, openid={}", user.getId(), openid);
-                    // 更新用户信息
-                    if (loginDTO.getNickname() != null) {
-                        user.setNickname(loginDTO.getNickname());
-                    }
-                    if (loginDTO.getAvatar() != null) {
-                        user.setAvatar(loginDTO.getAvatar());
-                    }
-                    if (loginDTO.getGender() != null) {
-                        user.setGender(loginDTO.getGender());
-                    }
-                    if (loginDTO.getProvince() != null) {
-                        user.setProvince(loginDTO.getProvince());
-                    }
-                    if (loginDTO.getCity() != null) {
-                        user.setCity(loginDTO.getCity());
-                    }
-                    if (loginDTO.getCountry() != null) {
-                        user.setCountry(loginDTO.getCountry());
-                    }
-                    user.setOpenid(openid);
-                    // 更新登录统计
-                    user.setLoginCount(user.getLoginCount() != null ? user.getLoginCount() + 1 : 1);
-                    user.setLastLoginTime(new Date());
-                    user.setUpdateTime(new Date());
-                    userMapper.updateById(user);
-                }
-
-                // 生成双token
-                String accessToken = jwtUtil.generateToken(user.getId());
-                String refreshToken = jwtUtil.generateRefreshToken(user.getId());
-                long expiresIn = jwtUtil.getExpirationSeconds(accessToken);
-
-                log.info("用户登录成功: userId={}, expiresIn={}", user.getId(), expiresIn);
-
-                LoginVO loginVO = new LoginVO();
-                loginVO.setUserId(user.getId());
-                loginVO.setAccessToken(accessToken);
-                loginVO.setRefreshToken(refreshToken);
-                loginVO.setExpiresIn(expiresIn);
-                return Result.success(loginVO);
-            } catch (Exception e) {
-                log.error("用户登录失败: {}", e.getMessage(), e);
-                throw new RuntimeException("登录失败: " + e.getMessage(), e);
+            if (openid == null || openid.isEmpty()) {
+                return Result.error(400, "获取openid失败");
             }
 
+            log.info("获取登录信息成功: openid={}", openid);
+
+            // 根据openid查询用户（openid作为唯一标识）
+            User user = getByOpenid(openid);
+            if (user == null) {
+                log.info("新用户注册: openid={}", openid);
+                user = new User();
+                user.setOpenid(openid);
+                user.setNickname(loginDTO.getNickname());
+                user.setAvatar(loginDTO.getAvatar());
+                user.setPhoneNumber(loginDTO.getPhoneNumber());
+                user.setGender(loginDTO.getGender());
+                user.setProvince(loginDTO.getProvince());
+                user.setCity(loginDTO.getCity());
+                user.setCountry(loginDTO.getCountry());
+                user.setLoginCount(1);
+                user.setLastLoginTime(new Date());
+                user.setStatus(0);
+                user.setCreateTime(new Date());
+                user.setUpdateTime(new Date());
+
+                create(user);
+
+                defaultDrawing(user);
+            } else {
+                log.info("用户登录: userId={}, openid={}", user.getId(), openid);
+                // 更新用户信息
+                if (loginDTO.getNickname() != null) {
+                    user.setNickname(loginDTO.getNickname());
+                }
+                if (loginDTO.getAvatar() != null) {
+                    user.setAvatar(loginDTO.getAvatar());
+                }
+                if (loginDTO.getPhoneNumber() != null) {
+                    user.setPhoneNumber(loginDTO.getPhoneNumber());
+                }
+                if (loginDTO.getGender() != null) {
+                    user.setGender(loginDTO.getGender());
+                }
+                if (loginDTO.getProvince() != null) {
+                    user.setProvince(loginDTO.getProvince());
+                }
+                if (loginDTO.getCity() != null) {
+                    user.setCity(loginDTO.getCity());
+                }
+                if (loginDTO.getCountry() != null) {
+                    user.setCountry(loginDTO.getCountry());
+                }
+                // 更新登录统计
+                user.setLoginCount(user.getLoginCount() != null ? user.getLoginCount() + 1 : 1);
+                user.setLastLoginTime(new Date());
+                user.setUpdateTime(new Date());
+                userMapper.updateById(user);
+            }
+
+            // 生成双token
+            String accessToken = jwtUtil.generateToken(user.getId());
+            String refreshToken = jwtUtil.generateRefreshToken(user.getId());
+            long expiresIn = jwtUtil.getExpirationSeconds(accessToken);
+
+            log.info("用户登录成功: userId={}, expiresIn={}", user.getId(), expiresIn);
+
+            LoginVO loginVO = new LoginVO();
+            loginVO.setUserId(user.getId());
+            loginVO.setAccessToken(accessToken);
+            loginVO.setRefreshToken(refreshToken);
+            loginVO.setExpiresIn(expiresIn);
+            return Result.success(loginVO);
+        } catch (Exception e) {
+            log.error("用户登录失败: {}", e.getMessage(), e);
+            throw new RuntimeException("登录失败: " + e.getMessage(), e);
         }
-        return Result.error(500, "验证验证码失败");
     }
 
     private void defaultDrawing(User user) {
