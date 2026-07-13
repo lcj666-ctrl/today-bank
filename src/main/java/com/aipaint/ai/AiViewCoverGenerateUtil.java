@@ -40,7 +40,7 @@ public class AiViewCoverGenerateUtil {
                 // 各地域的API Key不同。获取API Key：https://help.aliyun.com/zh/model-studio/get-api-key
 //                .apiKey(System.getenv("DASHSCOPE_VIEW_API_KEY"))
                 .apiKey("sk-d98a10f4d8834ba3af3f0efa60216a76")
-                .model("qwen3.5-plus")  // 此处以qwen3.5-plus为例，可按需更换模型名称。模型列表：https://help.aliyun.com/zh/model-studio/models
+                .model("qwen3.7-plus")  // 此处以qwen3.5-plus为例，可按需更换模型名称。模型列表：https://help.aliyun.com/zh/model-studio/models
                 .messages(Arrays.asList(userMessage))
                 .build();
         MultiModalConversationResult result = conv.call(param);
