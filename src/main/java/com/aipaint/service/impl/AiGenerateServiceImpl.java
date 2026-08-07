@@ -30,6 +30,8 @@ public class AiGenerateServiceImpl implements AiGenerateService {
 
     @Autowired
     private AiImageGenerateUtil aiImageGenerateUtil;
+    @Autowired
+    private QwenImageEdit qwenImageEdit;
 
 
     @Autowired
@@ -52,7 +54,7 @@ public class AiGenerateServiceImpl implements AiGenerateService {
         // 调用AI生成图像
         String aiImageUrl = "";
         try {
-            aiImageUrl = QwenImageEdit.call(drawing.getDrawingUrl(), null);
+            aiImageUrl = qwenImageEdit.call(drawing.getDrawingUrl(), null);
         } catch (NoApiKeyException e) {
              throw new RuntimeException(e);
         } catch (UploadFileException e) {
