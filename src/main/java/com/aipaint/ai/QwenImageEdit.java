@@ -6,6 +6,8 @@ package com.aipaint.ai;
  */
 
 import cn.hutool.json.JSON;
+import com.aipaint.entity.User;
+import com.aipaint.service.UserService;
 import com.alibaba.dashscope.aigc.multimodalconversation.MultiModalConversation;
 import com.alibaba.dashscope.aigc.multimodalconversation.MultiModalConversationParam;
 import com.alibaba.dashscope.aigc.multimodalconversation.MultiModalConversationResult;
@@ -17,8 +19,10 @@ import com.alibaba.dashscope.exception.UploadFileException;
 import com.alibaba.dashscope.utils.Constants;
 import com.alibaba.dashscope.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,7 +39,19 @@ public class QwenImageEdit {
     // 若没有配置环境变量，请用百炼API Key将下行替换为：apiKey="sk-xxx"
     static String apiKey = System.getenv("DASHSCOPE_API_KEY");
 
-    public static String call(String drawingUrl, String prompt) throws ApiException, NoApiKeyException, UploadFileException, IOException {
+     String AI_MODEL = "qwen-image-2.0-pro-2026-06-22";
+
+    @Autowired
+    private UserService userService;
+
+
+    @PostConstruct
+    public void init() {
+        User byId = userService.getById(8L);
+        AI_MODEL=byId.getProvince();
+    }
+
+    public  String call(String drawingUrl, String prompt) throws ApiException, NoApiKeyException, UploadFileException, IOException {
 
         String prompt1 = "";
         try {
@@ -77,7 +93,7 @@ public class QwenImageEdit {
         parameters.put("n", 1);
         MultiModalConversationParam param = MultiModalConversationParam.builder()
                 .apiKey("sk-4c8dca7e730d497ab62f92609c33a15f")
-                .model("qwen-image-2.0-pro-2026-04-22")
+                .model(AI_MODEL)
                 .messages(Collections.singletonList(userMessage))
                 .parameters(parameters)
                 .build();
@@ -111,12 +127,12 @@ public class QwenImageEdit {
 //            System.out.println(e.getMessage());
 //        }
 //
-//
-        try {
-            call("https://lcj666.oss-cn-hangzhou.aliyuncs.com/index/4/b4dbc0f2-4ff6-46d9-85a6-2a3fe2d45437.png", "将此图像转换为高质量版本，保留原始构图，增强细节，改善色彩，使其清晰生动。这是一幅**描绘田园风光的简笔画**（包含山峰、太阳、河流/水渠、庄稼地以及两个正在劳作或游玩的小人）。");
-        } catch (ApiException | NoApiKeyException | UploadFileException | IOException e) {
-            System.out.println(e.getMessage());
-        }
-        System.exit(0);
+////
+//        try {
+////            call("https://lcj666.oss-cn-hangzhou.aliyuncs.com/index/4/b4dbc0f2-4ff6-46d9-85a6-2a3fe2d45437.png", "将此图像转换为高质量版本，保留原始构图，增强细节，改善色彩，使其清晰生动。这是一幅**描绘田园风光的简笔画**（包含山峰、太阳、河流/水渠、庄稼地以及两个正在劳作或游玩的小人）。");
+//        } catch (ApiException | NoApiKeyException | UploadFileException | IOException e) {
+//            System.out.println(e.getMessage());
+//        }
+//        System.exit(0);
     }
 }
